@@ -1,0 +1,11 @@
+name: eDNA_R_packages
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - r-sf
+  - r-stringr
+  - r-spatstat
+  - r-geosphere
+  - r-raster
