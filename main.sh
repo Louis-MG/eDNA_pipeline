@@ -3,7 +3,7 @@
 set -e
 
 Help() {
-echo "
+echo -e "
 This script is the main for the eDNA pipeline. Its arguments are :
 	-i --input <PATH> to the input folder.
 	-m --map <PATH> to the mapping file, LotuS3 style.
@@ -14,6 +14,8 @@ This script is the main for the eDNA pipeline. Its arguments are :
 	-n --nanopore <FLAG> \u2691 #comment on fait ca
 	-g --marker <CO1/CO2/CO3/Cytb/A6/A8/ND1/ND2/ND3/ND4/ND4L/ND5/ND6/srRNA(12S)/lrRNA(18S)> gene marker used.
 	-h --help displays this help message and exits.
+
+\033[0;32mThis script requires mamba. See scripts/install_envs.sh . \033[0m
 "
 }
 
@@ -74,15 +76,15 @@ fi
 
 if [ ! -d "$input" ];
 then
-	echo -e "ERROR: input folder ${input} does not exist. Exiting"
+	echo -e "\033[0;31mERROR: input folder ${input} does not exist. Exiting\033[0m"
 	exit 1
 elif [ ! -f "$map" ];
 then
-	echo -e "ERROR: input file ${map} does not exist. Exiting"
+	echo -e "\033[0;31mERROR: input file ${map} does not exist. Exiting.\033[0m"
 	exit 1
 elif [ ! "${markers[$marker]}" ];
 then
-	echo -e "ERROR: marker gene not in the list of markers avalable.Exiting."
+	echo -e "\033[0;31mERROR: marker gene not in the list of markers avalable. Exiting.\033[0m"
 	exit 1
 fi
 
@@ -95,6 +97,7 @@ fi
 
 # RUN 1
 
+mkdir -p "$output"/fastqc
 mamba run -n fastqc fastqc -o "$output"/fastqc -t "$threads" $(readlink -f "$input"/*.fastq*)
 
 mamba run -n fastqc multiqc -o "$output"/multiqc "$output"/fastqc/*
@@ -109,7 +112,6 @@ mamba run -n fastqc multiqc -o "$output"/multiqc "$output"/fastqc/*
 pipeline_dir=$(readlink -f "$0")
 pipeline_dir=$(dirname "$pipeline_dir")
 
-#TODO: pertinence de faire un arbre taxo alors qu on a un gros melange despeces qui peuvent etre bien distantes ?
 "$pipeline_dir"/tools/LotuS3/lotus3 -i "$input" -o "$output" -t "$threads" -m "$map" -p "$tech" -buildPhylo 0 -CL dada2 -tax_group eukarya -amplicon_type "$amplicon_type"
 
 #####################################
@@ -120,7 +122,7 @@ pipeline_dir=$(dirname "$pipeline_dir")
 
 java -Xmx15g -jar "$pipeline_dir"/tools/rdp_classifier_2.14/dist/classifier.jar classify -t "$pipeline_dir"/tools/rdp_midori_"$marker"/rRNAClassifier.properties -o "$output"/rdp_midori_"$marker"_hier.tsv --format allrank "$output"/OTU.fna &> "$output"/rdp.log
 #Rscript to phyloseq
-mamb run -n eDNA_R_packages Rscript scripts/phyloseq_to_sample2species_report.R -p "$output"/phyloseq.Rdata -o "$output" -r "$output"/rdp_midori_"$marker"_hier.tsv
+mamba run -n eDNA_R_packages Rscript scripts/phyloseq_to_sample2species_report.R -p "$output"/phyloseq.Rdata -o "$output" -r "$output"/rdp_midori_"$marker"_hier.tsv
 
 #####################################
 #
@@ -129,7 +131,7 @@ mamb run -n eDNA_R_packages Rscript scripts/phyloseq_to_sample2species_report.R 
 #####################################
 
 #TODO: dl le script des chercheurs et essayer de faire les metadatas
-mamba run -n eDNA_R_packages Rscript "$pipeline_dir"/scripts/Pipeline_taxo_quality_V5.R
+#mamba run -n eDNA_R_packages Rscript "$pipeline_dir"/scripts/Pipeline_taxo_quality_V5.R
 # les fichiers complexes a produire vont l'etre par les auteurs du script donc ca sera facile a faire.
 # Soyons patients !
 
@@ -141,5 +143,5 @@ mamba run -n eDNA_R_packages Rscript "$pipeline_dir"/scripts/Pipeline_taxo_quali
 
 
 #TODO: utiliser un script phyloseq pour faire les alpha pcoa ou autres
-
+mamba run -n eDNA_R_packages Rscript "$pipeline_dir"/scripts/phyloseq.R -i "$output" -o "$output"
 #struct: echantillon metadata liste_especes_trouvees note_sur_5
