@@ -62,22 +62,22 @@ load(paste(input_path, "/phyloseq.Rdata", sep = ""))
 ##################################################
 
 #potentiellement filtrer sur les 20 especes les plus abondances, faire une figure sur un niveau atxo plus haut pour faciliter la lecture
-png(filename = paste(output_path,"/barplot.png", sep = ""), width = 1000, height = 1000)
+png(filename = paste(output_path,"/barplot.png", sep = ""), width = 1600, height = 900, units = "px")
 plot_bar(physeq, fill = "Genus")
 dev.off()
 
-png(filename = paste(output_path,"/phylogic_tree.png", sep = ""))
-plot_tree(physeq, label.tips="taxa_names", ladderize="left", plot.margin=0.3)
-dev.off()
+#png(filename = paste(output_path,"/phylogic_tree.png", sep = ""))
+#plot_tree(physeq, label.tips="taxa_names", ladderize="left", plot.margin=0.3)
+#dev.off()
 
-png(filename = paste(output_path,"/heatmap.png", sep = ""))
-plot_heatmap(physeq, title = "Heatmap of samples based on the OTU/ASV composition.")
-dev.off()
+#png(filename = paste(output_path,"/heatmap.png", sep = ""))
+#plot_heatmap(physeq, title = "Heatmap of samples based on the OTU/ASV composition.")
+#dev.off()
 
 #estimate_richness(physeq, split = TRUE, measures = NULL)
 #eventuellement donner un argument pour la liste des mesures de diversite et en donner le choix
-png(filename = paste(output_path,"/richness.png", sep = "", width=1600, height=900))
+png(filename = paste(output_path,"/richness.png", sep = ""), width=3200, height=900)
 plot_richness(physeq, x = "samples", color = NULL, shape = NULL,
-title = "Plot of the richness per sample.", scales = "free_y", nrow = 1, shsi = NULL,
+title = "Plot of the richness per sample.", scales = "free_y", shsi = NULL,
 measures = NULL, sortby = NULL)
 dev.off()

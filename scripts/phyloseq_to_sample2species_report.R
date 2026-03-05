@@ -62,8 +62,8 @@ if (!dir.exists(folder_path)) {
 
 data <- load(phyloseq_path)
 
-classifier_output <- read.table(rdp_path, header = FALSE, stringsAsFactors = FALSE, sep = "\t")
-colnames(classifier_output) <- c("seq_id", "Root", "Kingdom", "rank2", "confidence2", "Phylum", "rank3", "confidence3", "Class", "rank4", "confidence4", "Order", "rank5", "confidence5", "Family", "rank6", "confidence6", "Genus", "rank7", "confidence7", "Species", "rank8", "confidence8")
+classifier_output <- read.table(rdp_path, header = FALSE, stringsAsFactors = FALSE, sep = "\t", fill = F)
+colnames(classifier_output) <- c("seq_id", "Nothing", "Root", "rank1", "confidence1", "Kingdom", "rank2", "confidence2", "Phylum", "rank3", "confidence3", "Class", "rank4", "confidence4", "Order", "rank5", "confidence5", "Family", "rank6", "confidence6", "Genus", "rank7", "confidence7", "Species", "rank8", "confidence8")
 tax_table <- classifier_output[,c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")]
 tax_table[is.na(tax_table)] <- "?"
 
