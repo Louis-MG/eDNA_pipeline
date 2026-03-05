@@ -9,3 +9,7 @@ dependencies:
   - r-spatstat
   - r-geosphere
   - r-raster
+  - r-ggplot2
+  - r-tidyverse
+  - r-optparse
+  - bioconductor-phyloseq
